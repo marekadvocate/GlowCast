@@ -108,9 +108,9 @@ struct ContentView: View {
                     .environmentObject(model)
             }
         }
-        .frame(width: 320)
-        // Let scroll view size itself; cap height for very small screens
-        .frame(maxHeight: 680)
+        // MenuBarExtra(.window) sizes to content; a ScrollView has no intrinsic
+        // height, so it MUST get a definite frame or the popover collapses ("shrinks").
+        .frame(width: 320, height: 600)
         .background(.regularMaterial)
     }
 }
