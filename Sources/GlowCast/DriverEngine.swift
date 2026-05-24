@@ -13,6 +13,7 @@ final class DriverEngine {
     init(hid: HIDDevice) { self.hid = hid }
 
     func start() {
+        stop()
         startTime = Date()
         let t = DispatchSource.makeTimerSource(queue: .main)
         t.schedule(deadline: .now(), repeating: .milliseconds(33), leeway: .milliseconds(5))
@@ -27,7 +28,7 @@ final class DriverEngine {
         let s = settingsProvider()
         let time = Date().timeIntervalSince(startTime)
         let colors = Animator.colors(mode: s.mode, base: s.color, brightness: s.brightness,
-                                     speed: s.speed, on: s.isOn, time: time)
+                                     speed: s.speed, on: s.isOn, audioLevel: 0, time: time)
         for packet in PacketBuilder.sequence(colors: colors) {
             hid.send(packet: packet)
         }
