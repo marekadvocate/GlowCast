@@ -10,22 +10,46 @@ private struct PaletteColor: Identifiable {
 }
 
 private let basicPalette: [PaletteColor] = [
+    // Reds
     .init(id: "ff3b30", name: "Red"),
+    .init(id: "ff6b5e", name: "Salmon"),
+    .init(id: "b3001b", name: "Dark Red"),
+    // Oranges
     .init(id: "ff9500", name: "Orange"),
+    .init(id: "ff7a00", name: "Deep Orange"),
+    .init(id: "ffb86c", name: "Peach"),
+    // Yellows
     .init(id: "ffcc00", name: "Yellow"),
+    .init(id: "ffe066", name: "Light Yellow"),
+    // Amber / Gold
+    .init(id: "e8a33d", name: "Amber"),
+    // Greens
     .init(id: "34c759", name: "Green"),
+    .init(id: "30d158", name: "Mint Green"),
+    .init(id: "1b5e20", name: "Dark Green"),
+    .init(id: "a8e6a1", name: "Light Green"),
+    // Teals / Cyans
     .init(id: "00c7be", name: "Mint"),
     .init(id: "30b0c7", name: "Teal"),
     .init(id: "06b6d4", name: "Cyan"),
+    .init(id: "0e7490", name: "Dark Cyan"),
+    // Blues
     .init(id: "5ac8fa", name: "Light Blue"),
     .init(id: "007aff", name: "Blue"),
+    .init(id: "0a3d91", name: "Dark Blue"),
+    // Indigos / Purples
     .init(id: "5856d6", name: "Indigo"),
+    .init(id: "4b0082", name: "Deep Purple"),
     .init(id: "af52de", name: "Purple"),
+    .init(id: "c77dff", name: "Lavender"),
+    // Pinks / Magentas
     .init(id: "ff2d55", name: "Pink"),
+    .init(id: "ff5fa2", name: "Hot Pink"),
     .init(id: "ff00aa", name: "Magenta"),
-    .init(id: "a2845e", name: "Brown"),
-    .init(id: "ffe4b5", name: "Warm White"),
+    // Whites / Neutrals
     .init(id: "ffffff", name: "White"),
+    .init(id: "ffe4b5", name: "Warm White"),
+    .init(id: "f5f5f0", name: "Cool White"),
 ]
 
 // MARK: - Helpers
@@ -84,9 +108,9 @@ struct ContentView: View {
                     .environmentObject(model)
             }
         }
-        .frame(width: 300)
+        .frame(width: 320)
         // Let scroll view size itself; cap height for very small screens
-        .frame(maxHeight: 620)
+        .frame(maxHeight: 680)
         .background(.regularMaterial)
     }
 }
@@ -98,7 +122,7 @@ private struct StatusHeader: View {
 
     private var dotColor: Color {
         if model.needsPermission { return .orange }
-        return model.statusText.contains("connected") ? .green : .secondary
+        return model.deviceConnected ? .green : .gray
     }
 
     var body: some View {
@@ -117,16 +141,47 @@ private struct StatusHeader: View {
             }
 
             if model.needsPermission {
-                Button {
-                    PermissionManager.openInputMonitoringSettings()
-                } label: {
-                    Label("Open Input Monitoring Settings", systemImage: "lock.shield")
-                        .font(.caption)
-                        .frame(maxWidth: .infinity)
+                VStack(alignment: .leading, spacing: 4) {
+                    Button {
+                        PermissionManager.openInputMonitoringSettings()
+                    } label: {
+                        Label("Open Input Monitoring Settings", systemImage: "lock.shield")
+                            .font(.caption)
+                            .frame(maxWidth: .infinity)
+                    }
+                    .controlSize(.small)
+                    .buttonStyle(.borderedProminent)
+                    .tint(.orange)
+
+                    Text("After enabling, unplug & replug the mic.")
+                        .font(.caption2)
+                        .foregroundStyle(.secondary)
+                        .frame(maxWidth: .infinity, alignment: .leading)
                 }
-                .controlSize(.small)
-                .buttonStyle(.borderedProminent)
-                .tint(.orange)
+            }
+
+            // Microphone permission hint for audio-driven modes
+            if (model.settings.mode == .reactive || model.settings.mode == .vu)
+                && model.audioPermissionDenied {
+                HStack(alignment: .top, spacing: 6) {
+                    Image(systemName: "mic.slash.fill")
+                        .font(.caption2)
+                        .foregroundStyle(.orange)
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Microphone access needed for reactive modes")
+                            .font(.caption2)
+                            .foregroundStyle(.orange)
+                        Button("Open Microphone Settings") {
+                            PermissionManager.openMicrophoneSettings()
+                        }
+                        .font(.caption2)
+                        .controlSize(.mini)
+                        .buttonStyle(.borderless)
+                        .foregroundStyle(.orange)
+                    }
+                }
+                .padding(6)
+                .background(.orange.opacity(0.12), in: RoundedRectangle(cornerRadius: 6))
             }
         }
         .padding(.horizontal, 14)
@@ -192,14 +247,14 @@ private struct PowerAndHeroSection: View {
 private struct ColorPaletteSection: View {
     @EnvironmentObject var model: AppModel
 
-    // 8 columns × 2 rows
-    private let columns = Array(repeating: GridItem(.flexible(), spacing: 6), count: 8)
+    // 8 columns
+    private let columns = Array(repeating: GridItem(.flexible(), spacing: 5), count: 8)
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             SectionLabel(title: "Colors", icon: "paintpalette")
 
-            LazyVGrid(columns: columns, spacing: 6) {
+            LazyVGrid(columns: columns, spacing: 5) {
                 ForEach(basicPalette) { entry in
                     ColorSwatch(entry: entry)
                         .environmentObject(model)
@@ -255,12 +310,12 @@ private struct ColorSwatch: View {
                     Circle()
                         .strokeBorder(.white, lineWidth: 2)
                     Image(systemName: "checkmark")
-                        .font(.system(size: 8, weight: .bold))
+                        .font(.system(size: 7, weight: .bold))
                         .foregroundStyle(.white)
                         .shadow(radius: 1)
                 }
             }
-            .frame(width: 28, height: 28)
+            .frame(width: 26, height: 26)
             .shadow(color: swatchColor.opacity(isHovered ? 0.6 : 0.3), radius: isHovered ? 5 : 3)
             .scaleEffect(isHovered ? 1.1 : 1.0)
             .animation(.spring(response: 0.25, dampingFraction: 0.7), value: isHovered)
@@ -271,7 +326,7 @@ private struct ColorSwatch: View {
     }
 }
 
-// MARK: - Controls (mode, brightness, speed, presets)
+// MARK: - Controls (mode grid, brightness, speed, presets)
 
 private struct ControlsSection: View {
     @EnvironmentObject var model: AppModel
@@ -291,20 +346,17 @@ private struct ControlsSection: View {
         )
     }
 
+    /// Show speed only for modes that are neither static-color nor audio-driven.
+    private var showSpeed: Bool {
+        let mode = model.settings.mode
+        return mode != .solid && mode != .reactive && mode != .vu
+    }
+
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
-            // Mode picker
-            VStack(alignment: .leading, spacing: 6) {
-                SectionLabel(title: "Mode", icon: "sparkles")
-
-                Picker("", selection: $model.settings.mode) {
-                    ForEach(LightingMode.allCases, id: \.self) { mode in
-                        Text(mode.displayName).tag(mode)
-                    }
-                }
-                .pickerStyle(.segmented)
-                .labelsHidden()
-            }
+            // Mode grid
+            ModeGridSection()
+                .environmentObject(model)
 
             // Brightness slider
             SliderRow(
@@ -315,8 +367,8 @@ private struct ControlsSection: View {
                 valueLabel: "\(model.settings.brightness)%"
             )
 
-            // Speed slider — only for animated modes
-            if model.settings.mode != .solid {
+            // Speed slider — only for animated, non-audio-driven modes
+            if showSpeed {
                 SliderRow(
                     icon: "hare.fill",
                     label: "Speed",
@@ -331,23 +383,120 @@ private struct ControlsSection: View {
             }
 
             // Presets row
-            if !model.settings.presets.isEmpty {
-                VStack(alignment: .leading, spacing: 6) {
-                    SectionLabel(title: "Presets", icon: "bookmark")
-
-                    HStack(spacing: 8) {
-                        ForEach(model.settings.presets, id: \.self) { hex in
-                            PresetSwatch(hex: hex)
-                                .environmentObject(model)
-                        }
-                        Spacer()
-                    }
-                }
-            }
+            PresetsRow()
+                .environmentObject(model)
         }
         .padding(.horizontal, 14)
         .padding(.vertical, 10)
         .animation(.easeInOut(duration: 0.2), value: model.settings.mode)
+    }
+}
+
+// MARK: - Mode grid
+
+private struct ModeGridSection: View {
+    @EnvironmentObject var model: AppModel
+
+    // 4 columns
+    private let columns = Array(repeating: GridItem(.flexible(), spacing: 6), count: 4)
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            SectionLabel(title: "Mode", icon: "sparkles")
+
+            LazyVGrid(columns: columns, spacing: 6) {
+                ForEach(LightingMode.allCases, id: \.self) { mode in
+                    ModeChip(mode: mode)
+                        .environmentObject(model)
+                }
+            }
+        }
+    }
+}
+
+private struct ModeChip: View {
+    @EnvironmentObject var model: AppModel
+    let mode: LightingMode
+
+    @State private var isHovered = false
+
+    private var isSelected: Bool { model.settings.mode == mode }
+
+    var body: some View {
+        Button {
+            withAnimation(.easeInOut(duration: 0.15)) {
+                model.settings.mode = mode
+            }
+        } label: {
+            VStack(spacing: 4) {
+                Image(systemName: mode.symbol)
+                    .font(.system(size: 14, weight: isSelected ? .semibold : .regular))
+                    .frame(height: 18)
+                Text(mode.displayName)
+                    .font(.system(size: 9, weight: isSelected ? .semibold : .regular))
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.7)
+            }
+            .foregroundStyle(isSelected ? .white : (isHovered ? .primary : .secondary))
+            .padding(.vertical, 6)
+            .padding(.horizontal, 4)
+            .frame(maxWidth: .infinity)
+            .background(
+                RoundedRectangle(cornerRadius: 8, style: .continuous)
+                    .fill(isSelected
+                          ? AnyShapeStyle(Color.accentColor)
+                          : AnyShapeStyle(Color.primary.opacity(isHovered ? 0.1 : 0.06)))
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: 8, style: .continuous)
+                    .strokeBorder(isSelected
+                                  ? Color.accentColor.opacity(0.5)
+                                  : Color.clear, lineWidth: 1)
+            )
+            .scaleEffect(isHovered && !isSelected ? 1.03 : 1.0)
+            .animation(.spring(response: 0.22, dampingFraction: 0.75), value: isHovered)
+        }
+        .buttonStyle(.plain)
+        .help(mode.displayName)
+        .onHover { isHovered = $0 }
+    }
+}
+
+// MARK: - Presets row
+
+private struct PresetsRow: View {
+    @EnvironmentObject var model: AppModel
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            HStack {
+                SectionLabel(title: "Presets", icon: "bookmark")
+                Spacer()
+                Button {
+                    withAnimation { model.saveCurrentAsPreset() }
+                } label: {
+                    Image(systemName: "plus.circle")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+                .buttonStyle(.plain)
+                .help("Save current color as preset")
+            }
+
+            if model.settings.presets.isEmpty {
+                Text("No presets yet — tap + to save the current color.")
+                    .font(.caption2)
+                    .foregroundStyle(.tertiary)
+            } else {
+                HStack(spacing: 8) {
+                    ForEach(model.settings.presets, id: \.self) { hex in
+                        PresetSwatch(hex: hex)
+                            .environmentObject(model)
+                    }
+                    Spacer()
+                }
+            }
+        }
     }
 }
 

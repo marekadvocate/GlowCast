@@ -12,6 +12,7 @@ final class AppModel: ObservableObject {
     @Published var statusText: String = "Searching for QuadCast 2 S…"
     @Published var needsPermission = false
     @Published var audioPermissionDenied = false
+    @Published var deviceConnected = false
 
     private let store: SettingsStore
     private let hid = HIDDevice()
@@ -49,10 +50,22 @@ final class AppModel: ObservableObject {
 
     private func apply(_ state: HIDDevice.State) {
         switch state {
-        case .connected:    statusText = "QuadCast 2 S connected"; needsPermission = false
-        case .disconnected: statusText = "Mic not connected"; needsPermission = false
-        case .notPermitted: statusText = "Input Monitoring permission needed"; needsPermission = true
-        case .error(let m): statusText = "Error: \(m)"; needsPermission = false
+        case .connected:
+            statusText = "QuadCast 2 S connected"
+            needsPermission = false
+            deviceConnected = true
+        case .disconnected:
+            statusText = "Mic not connected"
+            needsPermission = false
+            deviceConnected = false
+        case .notPermitted:
+            statusText = "Input Monitoring permission needed"
+            needsPermission = true
+            deviceConnected = false
+        case .error(let m):
+            statusText = "Error: \(m)"
+            needsPermission = false
+            deviceConnected = false
         }
     }
 
@@ -64,5 +77,11 @@ final class AppModel: ObservableObject {
     func applyPreset(_ hex: String) {
         settings.colorHex = hex
         settings.mode = .solid
+    }
+
+    func saveCurrentAsPreset() {
+        let hex = settings.colorHex.lowercased()
+        guard !settings.presets.contains(where: { $0.lowercased() == hex }) else { return }
+        settings.presets.append(hex)
     }
 }
