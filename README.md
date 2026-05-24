@@ -1,7 +1,8 @@
 # GlowCast
 
 A native macOS **menu-bar app** to control **HyperX QuadCast 2 S** RGB lighting on macOS:
-solid color, brightness, and software animations (breathing, color cycle, rainbow, strobe, pulse).
+solid color, brightness, software animations (breathing, cycle, rainbow, strobe, pulse, wave,
+fire, police, party), and **microphone-reactive** modes that pulse with your voice / the music.
 
 The QuadCast 2 S has no macOS software and does **not** store color in firmware, so GlowCast
 drives it continuously via IOHIDManager and runs at login. Unplug/replug auto-recovers.
@@ -30,7 +31,7 @@ presets, and toggle **Launch at login**.
 ## Develop
 
 ```bash
-swift test     # 21 unit tests: RGBColor, PacketBuilder (golden device bytes), Animator, Settings
+swift test     # 30 unit tests: RGBColor, PacketBuilder (golden device bytes), Animator, Settings
 swift build    # build the executable
 bash Scripts/make_app.sh   # bundle + ad-hoc sign GlowCast.app
 ```
