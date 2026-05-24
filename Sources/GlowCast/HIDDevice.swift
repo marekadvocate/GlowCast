@@ -23,11 +23,12 @@ final class HIDDevice {
     }
 
     func start() {
+        // Match on VID+PID only. The vendor RGB collection (0xff13/0xff00) is a
+        // NON-primary usage of the controller's interface, so primary-usage
+        // matching misses it. We filter for the right interface in connect().
         let matching: [String: Any] = [
             kIOHIDVendorIDKey as String: QS2SProtocol.vendorID,
             kIOHIDProductIDKey as String: QS2SProtocol.productID,
-            kIOHIDPrimaryUsagePageKey as String: QS2SProtocol.usagePage,
-            kIOHIDPrimaryUsageKey as String: QS2SProtocol.usage,
         ]
         IOHIDManagerSetDeviceMatching(manager, matching as CFDictionary)
 
@@ -48,12 +49,31 @@ final class HIDDevice {
     }
 
     private func connect(_ dev: IOHIDDevice) {
+        // Several HID interfaces share this VID:PID; only the one carrying the
+        // vendor RGB collection (usage page 0xff13 / usage 0xff00) accepts packets.
+        guard device == nil, hasVendorUsage(dev) else { return }
         let r = IOHIDDeviceOpen(dev, IOOptionBits(kIOHIDOptionsTypeNone))
         switch r {
         case kIOReturnSuccess:    device = dev; state = .connected
         case kIOReturnNotPermitted: state = .notPermitted
         default: state = .error(String(format: "open 0x%08x", r))
         }
+    }
+
+    private func hasVendorUsage(_ dev: IOHIDDevice) -> Bool {
+        let pageKey = kIOHIDDeviceUsagePageKey as String
+        let usageKey = kIOHIDDeviceUsageKey as String
+        if let pairs = IOHIDDeviceGetProperty(dev, kIOHIDDeviceUsagePairsKey as CFString)
+            as? [[String: Int]],
+           pairs.contains(where: {
+               $0[pageKey] == QS2SProtocol.usagePage && $0[usageKey] == QS2SProtocol.usage
+           }) {
+            return true
+        }
+        // Fallback: primary usage.
+        let page = IOHIDDeviceGetProperty(dev, kIOHIDPrimaryUsagePageKey as CFString) as? Int
+        let usage = IOHIDDeviceGetProperty(dev, kIOHIDPrimaryUsageKey as CFString) as? Int
+        return page == QS2SProtocol.usagePage && usage == QS2SProtocol.usage
     }
 
     private func remove(_ dev: IOHIDDevice) {
