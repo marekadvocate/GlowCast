@@ -35,6 +35,10 @@ swift build    # build the executable
 bash Scripts/make_app.sh   # bundle + ad-hoc sign GlowCast.app
 ```
 
+## Screenshots
+
+_(add a screenshot of the menu-bar popover here)_
+
 ## Notes
 
 - macOS 13+. **Not** available on the Mac App Store (the sandbox forbids this HID access) —
@@ -43,3 +47,7 @@ bash Scripts/make_app.sh   # bundle + ad-hoc sign GlowCast.app
   [Ors1mer/QuadcastRGB](https://github.com/Ors1mer/QuadcastRGB) (GPL-2.0). Credit to Ors1mer.
 - Future (v2): spatial "wave" effects across individual LEDs (needs physical LED-order mapping);
   independent upper/lower zones.
+
+## License
+
+MIT — see [LICENSE](LICENSE). Protocol research credit: Ors1mer/QuadcastRGB.

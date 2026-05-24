@@ -12,5 +12,6 @@
     <key>LSMinimumSystemVersion</key><string>13.0</string>
     <key>LSUIElement</key><true/>
     <key>NSMicrophoneUsageDescription</key><string>GlowCast reads the microphone level to drive the reactive lighting modes.</string>
+    <key>CFBundleIconFile</key><string>AppIcon</string>
 </dict>
 </plist>

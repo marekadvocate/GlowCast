@@ -12,6 +12,7 @@ rm -rf "$APP"
 mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources"
 cp "$BIN" "$APP/Contents/MacOS/GlowCast"
 cp "$ROOT/Scripts/Info.plist" "$APP/Contents/Info.plist"
+cp "$ROOT/Scripts/AppIcon.icns" "$APP/Contents/Resources/AppIcon.icns"
 
 echo "==> ad-hoc signing"
 codesign --force --deep --sign - "$APP"
