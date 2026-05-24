@@ -6,6 +6,10 @@ let package = Package(
     platforms: [.macOS(.v13)],
     targets: [
         .target(name: "GlowCastCore"),
+        .executableTarget(
+            name: "GlowCast",
+            dependencies: ["GlowCastCore"]
+        ),
         .testTarget(
             name: "GlowCastCoreTests",
             dependencies: ["GlowCastCore"]
