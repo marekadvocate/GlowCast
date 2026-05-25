@@ -62,10 +62,12 @@ extension Color {
     /// Best-effort hex from a SwiftUI Color via NSColor.
     var rgbHex: String {
         let ns = NSColor(self).usingColorSpace(.sRGB) ?? .black
-        let r = UInt8((ns.redComponent * 255).rounded())
-        let g = UInt8((ns.greenComponent * 255).rounded())
-        let b = UInt8((ns.blueComponent * 255).rounded())
-        return GlowCastCore.RGBColor(r: r, g: g, b: b).hexString
+        // Clamp to [0,1]: wide-gamut/P3 colors can map outside sRGB and would
+        // otherwise crash `UInt8(>255)` or `UInt8(<0)`.
+        func byte(_ c: CGFloat) -> UInt8 { UInt8((min(1, max(0, c)) * 255).rounded()) }
+        return GlowCastCore.RGBColor(r: byte(ns.redComponent),
+                                     g: byte(ns.greenComponent),
+                                     b: byte(ns.blueComponent)).hexString
     }
 }
 
@@ -242,7 +244,10 @@ private struct ColorPaletteSection: View {
             HStack(spacing: 6) {
                 ColorPicker("", selection: Binding(
                     get: { Color(model.settings.color) },
-                    set: { model.settings.colorHex = $0.rgbHex }
+                    set: {
+                        model.settings.colorHex = $0.rgbHex
+                        model.settings.mode = .solid
+                    }
                 ), supportsOpacity: false)
                 .labelsHidden()
                 .frame(width: 28, height: 28)
