@@ -239,23 +239,6 @@ private struct ColorPaletteSection: View {
                         .environmentObject(model)
                 }
             }
-
-            // Custom color picker row
-            HStack(spacing: 6) {
-                ColorPicker("", selection: Binding(
-                    get: { Color(model.settings.color) },
-                    set: {
-                        model.settings.colorHex = $0.rgbHex
-                        model.settings.mode = .solid
-                    }
-                ), supportsOpacity: false)
-                .labelsHidden()
-                .frame(width: 28, height: 28)
-
-                Text("Custom color…")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-            }
         }
         .padding(.horizontal, 14)
         .padding(.vertical, 10)
@@ -362,10 +345,6 @@ private struct ControlsSection: View {
                     removal: .opacity
                 ))
             }
-
-            // Presets row
-            PresetsRow()
-                .environmentObject(model)
         }
         .padding(.horizontal, 14)
         .padding(.vertical, 10)
