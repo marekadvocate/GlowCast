@@ -84,35 +84,32 @@ struct ContentView: View {
     }
 
     var body: some View {
-        ScrollView(.vertical, showsIndicators: false) {
-            VStack(spacing: 0) {
-                StatusHeader()
-                    .environmentObject(model)
+        // No ScrollView: a fixed-width VStack sizes the popover to its content.
+        VStack(spacing: 0) {
+            StatusHeader()
+                .environmentObject(model)
 
-                Divider().opacity(0.5)
+            Divider().opacity(0.5)
 
-                PowerAndHeroSection(colorBinding: colorBinding)
-                    .environmentObject(model)
+            PowerAndHeroSection(colorBinding: colorBinding)
+                .environmentObject(model)
 
-                Divider().opacity(0.5)
+            Divider().opacity(0.5)
 
-                ColorPaletteSection()
-                    .environmentObject(model)
+            ColorPaletteSection()
+                .environmentObject(model)
 
-                Divider().opacity(0.5)
+            Divider().opacity(0.5)
 
-                ControlsSection(colorBinding: colorBinding)
-                    .environmentObject(model)
+            ControlsSection(colorBinding: colorBinding)
+                .environmentObject(model)
 
-                Divider().opacity(0.5)
+            Divider().opacity(0.5)
 
-                FooterSection()
-                    .environmentObject(model)
-            }
+            FooterSection()
+                .environmentObject(model)
         }
-        // MenuBarExtra(.window) sizes to content; a ScrollView has no intrinsic
-        // height, so it MUST get a definite frame or the popover collapses ("shrinks").
-        .frame(width: 320, height: 600)
+        .frame(width: 320)
         .background(.regularMaterial)
     }
 }
