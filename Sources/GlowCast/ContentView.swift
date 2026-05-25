@@ -525,7 +525,7 @@ private struct FooterSection: View {
     @EnvironmentObject var model: AppModel
 
     var body: some View {
-        VStack(spacing: 4) {
+        VStack(spacing: 12) {
             Toggle(isOn: Binding(
                 get: { model.settings.launchAtLogin },
                 set: { model.setLaunchAtLogin($0) }
@@ -536,7 +536,7 @@ private struct FooterSection: View {
             .toggleStyle(.checkbox)
             .frame(maxWidth: .infinity, alignment: .leading)
 
-            Divider().opacity(0.5).padding(.vertical, 4)
+            Divider().opacity(0.5)
 
             Button(role: .destructive) {
                 NSApplication.shared.terminate(nil)
@@ -549,7 +549,8 @@ private struct FooterSection: View {
             .foregroundStyle(.red)
         }
         .padding(.horizontal, 14)
-        .padding(.vertical, 10)
+        .padding(.top, 10)
+        .padding(.bottom, 16)
     }
 }
 
