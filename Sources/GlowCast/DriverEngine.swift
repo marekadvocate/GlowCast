@@ -10,9 +10,6 @@ final class DriverEngine {
     /// The engine pulls current settings each frame.
     var settingsProvider: () -> AppSettings = { .default }
 
-    /// Provides the current audio level (0…1) for reactive/vu modes.
-    var audioLevelProvider: () -> Double = { 0 }
-
     init(hid: HIDDevice) { self.hid = hid }
 
     func start() {
@@ -31,7 +28,7 @@ final class DriverEngine {
         let s = settingsProvider()
         let time = Date().timeIntervalSince(startTime)
         let colors = Animator.colors(mode: s.mode, base: s.color, brightness: s.brightness,
-                                     speed: s.speed, on: s.isOn, audioLevel: audioLevelProvider(), time: time)
+                                     speed: s.speed, on: s.isOn, time: time)
         for packet in PacketBuilder.sequence(colors: colors) {
             hid.send(packet: packet)
         }

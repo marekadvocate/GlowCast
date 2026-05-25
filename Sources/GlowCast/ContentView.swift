@@ -160,29 +160,6 @@ private struct StatusHeader: View {
                 }
             }
 
-            // Microphone permission hint for audio-driven modes
-            if (model.settings.mode == .reactive || model.settings.mode == .vu)
-                && model.audioPermissionDenied {
-                HStack(alignment: .top, spacing: 6) {
-                    Image(systemName: "mic.slash.fill")
-                        .font(.caption2)
-                        .foregroundStyle(.orange)
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text("Microphone access needed for reactive modes")
-                            .font(.caption2)
-                            .foregroundStyle(.orange)
-                        Button("Open Microphone Settings") {
-                            PermissionManager.openMicrophoneSettings()
-                        }
-                        .font(.caption2)
-                        .controlSize(.mini)
-                        .buttonStyle(.borderless)
-                        .foregroundStyle(.orange)
-                    }
-                }
-                .padding(6)
-                .background(.orange.opacity(0.12), in: RoundedRectangle(cornerRadius: 6))
-            }
         }
         .padding(.horizontal, 14)
         .padding(.vertical, 10)
@@ -346,10 +323,9 @@ private struct ControlsSection: View {
         )
     }
 
-    /// Show speed only for modes that are neither static-color nor audio-driven.
+    /// Show speed only for modes that are animated (not solid color).
     private var showSpeed: Bool {
-        let mode = model.settings.mode
-        return mode != .solid && mode != .reactive && mode != .vu
+        model.settings.mode != .solid
     }
 
     var body: some View {

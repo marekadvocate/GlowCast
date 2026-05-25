@@ -12,17 +12,15 @@ public enum Animator {
         case .solid: (slow, fast) = (1.0, 1.0)
         case .fire: (slow, fast) = (0.5, 0.1)
         case .party: (slow, fast) = (8.0, 1.0)
-        case .reactive, .vu: (slow, fast) = (1.0, 1.0)
         }
         return slow + (fast - slow) * s
     }
 
     public static func colors(mode: LightingMode, base: RGBColor, brightness: Int,
-                              speed: Int, on: Bool, audioLevel: Double = 0,
+                              speed: Int, on: Bool,
                               time: Double) -> [RGBColor] {
         let n = QS2SProtocol.ledCount
         guard on else { return Array(repeating: .black, count: n) }
-        let clampedAudio = max(0.0, min(1.0, audioLevel))
         let period = period(forSpeed: speed, mode: mode)
 
         switch mode {
@@ -95,16 +93,6 @@ public enum Animator {
             let hue = (Double(step) * 0.61803398875).truncatingRemainder(dividingBy: 1.0)
             let v = Double(brightness) / 100.0
             let color = RGBColor(hue: hue, saturation: 1, value: v)
-            return Array(repeating: color, count: n)
-
-        case .reactive:
-            let eff = Int(Double(brightness) * clampedAudio)
-            return Array(repeating: base.scaled(brightness: eff), count: n)
-
-        case .vu:
-            let hue = (1.0 - clampedAudio) * 0.33
-            let value = (0.2 + 0.8 * clampedAudio) * Double(brightness) / 100.0
-            let color = RGBColor(hue: hue, saturation: 1, value: value)
             return Array(repeating: color, count: n)
         }
     }

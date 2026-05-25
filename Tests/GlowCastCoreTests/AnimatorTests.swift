@@ -91,29 +91,4 @@ final class AnimatorTests: XCTestCase {
         XCTAssertNotEqual(c0[0], c1[0], "Party color at time=0 should differ from time=5*period")
     }
 
-    func testReactiveAtAudioLevelZeroIsBlack() {
-        let c = Animator.colors(mode: .reactive, base: base, brightness: 100, speed: 50, on: true, audioLevel: 0, time: 0)
-        XCTAssertTrue(c.allSatisfy { $0 == .black }, "Reactive at audioLevel=0 should be all black")
-    }
-
-    func testReactiveAtAudioLevelOneIsFullBase() {
-        let c = Animator.colors(mode: .reactive, base: base, brightness: 100, speed: 50, on: true, audioLevel: 1, time: 0)
-        XCTAssertTrue(c.allSatisfy { $0 == base }, "Reactive at audioLevel=1, brightness=100 should equal base color")
-    }
-
-    func testVUAtLevelOneIsRedDominant() {
-        let c = Animator.colors(mode: .vu, base: base, brightness: 100, speed: 50, on: true, audioLevel: 1, time: 0)
-        XCTAssertEqual(c.count, 108)
-        let led = c[0]
-        XCTAssertGreaterThan(Int(led.r), Int(led.g), "VU at audioLevel=1 should have r > g (red dominant)")
-        XCTAssertGreaterThan(Int(led.r), Int(led.b), "VU at audioLevel=1 should have r > b (red dominant)")
-    }
-
-    func testVUAtLevelZeroIsGreenDominant() {
-        let c = Animator.colors(mode: .vu, base: base, brightness: 100, speed: 50, on: true, audioLevel: 0, time: 0)
-        XCTAssertEqual(c.count, 108)
-        let led = c[0]
-        XCTAssertGreaterThan(Int(led.g), Int(led.r), "VU at audioLevel=0 should have g > r (green dominant)")
-        XCTAssertGreaterThan(Int(led.g), Int(led.b), "VU at audioLevel=0 should have g > b (green dominant)")
-    }
 }

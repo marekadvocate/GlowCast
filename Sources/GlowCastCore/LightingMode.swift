@@ -1,7 +1,7 @@
 import Foundation
 
 public enum LightingMode: String, CaseIterable, Codable, Sendable {
-    case solid, breathing, pulse, strobe, cycle, rainbow, wave, fire, police, party, reactive, vu
+    case solid, breathing, pulse, strobe, cycle, rainbow, wave, fire, police, party
 
     public var displayName: String {
         switch self {
@@ -15,8 +15,6 @@ public enum LightingMode: String, CaseIterable, Codable, Sendable {
         case .fire:      return "Fire"
         case .police:    return "Police"
         case .party:     return "Party"
-        case .reactive:  return "Reactive"
-        case .vu:        return "VU Meter"
         }
     }
 
@@ -32,8 +30,6 @@ public enum LightingMode: String, CaseIterable, Codable, Sendable {
         case .fire:      return "flame.fill"
         case .police:    return "light.beacon.max.fill"
         case .party:     return "party.popper.fill"
-        case .reactive:  return "waveform"
-        case .vu:        return "chart.bar.fill"
         }
     }
 }
