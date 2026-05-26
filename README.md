@@ -38,7 +38,7 @@ bash Scripts/make_app.sh   # bundle + ad-hoc sign GlowCast.app
 
 ## Screenshots
 
-_(add a screenshot of the menu-bar popover here)_
+<p align="center"><img src="docs/screenshot.png" alt="GlowCast menu-bar popover" width="360"></p>
 
 ## Notes
 
